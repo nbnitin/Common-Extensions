@@ -2,7 +2,7 @@
 //  ApiHandler.swift
 //  EazyCarCare
 //
-//  Created by Umesh Chauhan on 27/04/17.
+//  Created by Nitin Bhatia on 27/04/17.
 //  Copyright © 2017 Nitin Bhatia. All rights reserved.
 //
 
