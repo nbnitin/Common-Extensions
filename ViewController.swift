@@ -40,6 +40,16 @@ class ViewController: UIViewController,UINavigationControllerDelegate,UIImagePic
             dismiss(animated:true, completion: { (finished)  in
                 
                 self.profileImageView.image = pickedImage
+                                                
+                 //Mark:- Making image round, to do this make sure image view has equal width and height here in my case its width and height = 100 and make it to clipToBounds true from story board also make it aspect fill
+                let square = self.profileImageView.frame.size.width < self.profileImageView.frame.height ? CGSize(width: self.profileImageView.frame.size.width, height: self.profileImageView.frame.size.width) : CGSize(width: self.profileImageView.frame.size.height, height:  self.profileImageView.frame.size.height)
+
+                self.profileImageView.layer.borderWidth = 1
+                self.profileImageView.layer.masksToBounds = true
+                self.profileImageView.layer.borderColor = UIColor.white.cgColor
+                self.profileImageView.layer.cornerRadius = square.width/2
+                self.profileImageView.clipsToBounds = true
+                
                 
                 self.view.layoutIfNeeded()
                 self.view.hideLoad()
