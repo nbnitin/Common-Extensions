@@ -17,12 +17,17 @@ enum UIUserInterfaceIdiom : Int {
     case pad // iPad style UI
 }
 
+protocol removeDelegate{
+    func isRemovePressed(success:Bool)
+}
+
 class ChoosePicture :UIViewController,UIImagePickerControllerDelegate,UINavigationControllerDelegate {
     
+    var delegate : removeDelegate!
     
-    func openActions(vc : UIViewController,target : Any){
+    func openActions(vc : UIViewController,target : Any,removePictureOption:Bool=false){
         
-        
+        delegate = vc as! removeDelegate
         let vc : UIViewController = vc
         
         let optionMenu = UIAlertController(title: nil, message: "Choose Option", preferredStyle: .actionSheet)
@@ -43,13 +48,19 @@ class ChoosePicture :UIViewController,UIImagePickerControllerDelegate,UINavigati
             print("Cancelled")
         })
         
+        let removeAction = UIAlertAction(title: "Remove Photo", style: .default, handler: {
+            (alert: UIAlertAction!) -> Void in
+            self.delegate.isRemovePressed(success: true)
+        })
         
         // 4
         optionMenu.addAction(galleryAction)
         optionMenu.addAction(cameraAction)
         optionMenu.addAction(cancelAction)
         
-        
+        if( removePictureOption ) {
+            optionMenu.addAction(removeAction)
+        }
         
         switch UIDevice.current.userInterfaceIdiom {
         case .phone: break
