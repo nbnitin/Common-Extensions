@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController,UINavigationControllerDelegate,UIImagePickerControllerDelegate  {
+class ViewController: UIViewController,UINavigationControllerDelegate,UIImagePickerControllerDelegate,removeDelegate  {
     var cp : ChoosePicture!
     var apiHandeler : ApiHandler!
 
@@ -30,6 +30,17 @@ class ViewController: UIViewController,UINavigationControllerDelegate,UIImagePic
         let vc : UIViewController = self
         
         cp.openActions(vc: vc,target: self)
+        
+        //If you want remove photo option
+        cp.openActions(vc: self, target: self,removePictureOption: true)
+    }
+    
+    func isRemovePressed(success: Bool) {
+        if( success ){
+            isImageRemoved = true
+            base64String = ""
+            self.imgProfile.image = #imageLiteral(resourceName: "ic_profile")
+        }
     }
     
     func imagePickerController(_ picker: UIImagePickerController,                           didFinishPickingMediaWithInfo info: [String : Any])
