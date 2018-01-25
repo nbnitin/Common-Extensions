@@ -6,10 +6,6 @@
 //  Copyright © 2017 Nitin Bhatia. All rights reserved.
 //
 
-import Foundation
-import UIKit
-
-
 enum UIUserInterfaceIdiom : Int {
     case unspecified
     
@@ -17,8 +13,8 @@ enum UIUserInterfaceIdiom : Int {
     case pad // iPad style UI
 }
 
-protocol removeDelegate{
-    func isRemovePressed(success:Bool)
+ protocol removeDelegate{
+     func isRemovePressed(success:Bool)
 }
 
 class ChoosePicture :UIViewController,UIImagePickerControllerDelegate,UINavigationControllerDelegate {
@@ -27,7 +23,7 @@ class ChoosePicture :UIViewController,UIImagePickerControllerDelegate,UINavigati
     
     func openActions(vc : UIViewController,target : Any,removePictureOption:Bool=false){
         
-        delegate = vc as! removeDelegate
+        
         let vc : UIViewController = vc
         
         let optionMenu = UIAlertController(title: nil, message: "Choose Option", preferredStyle: .actionSheet)
@@ -42,16 +38,17 @@ class ChoosePicture :UIViewController,UIImagePickerControllerDelegate,UINavigati
             self.openCamera(vc: vc,target: target)
         })
         
+        let removeAction = UIAlertAction(title: "Remove Photo", style: .default, handler: {
+            (alert: UIAlertAction!) -> Void in
+            self.delegate.isRemovePressed(success: true)
+        })
+        
         //
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: {
             (alert: UIAlertAction!) -> Void in
             print("Cancelled")
         })
         
-        let removeAction = UIAlertAction(title: "Remove Photo", style: .default, handler: {
-            (alert: UIAlertAction!) -> Void in
-            self.delegate.isRemovePressed(success: true)
-        })
         
         // 4
         optionMenu.addAction(galleryAction)
@@ -60,7 +57,9 @@ class ChoosePicture :UIViewController,UIImagePickerControllerDelegate,UINavigati
         
         if( removePictureOption ) {
             optionMenu.addAction(removeAction)
+            delegate = vc as! removeDelegate
         }
+        
         
         switch UIDevice.current.userInterfaceIdiom {
         case .phone: break
