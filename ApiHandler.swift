@@ -15,27 +15,51 @@ class ApiHandler{
     
     func sendPostRequest(url : String, parameters : Parameters, completionHandler: @escaping (_ response : [String : AnyObject],_ error : Error?) -> Void)  {
         
-    
-            
-        Alamofire.request(url,method:.post,parameters: parameters,encoding:URLEncoding.httpBody)
-            .responseJSON(completionHandler: { response in
-                
+     //Mark:- This below request format sends json data with headers
+        
+        var headers: HTTPHeaders = [
+            "Content-Type":"application/json",
+            "Accept": "application/json"
+        ]
+        
+        Alamofire.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: headers).responseJSON(completionHandler: { response in
+          
+            //debugPrint(response)
+            if((response.result.value) != nil) {
+
+                // 2. now pass your variable / result to completion handler
+                completionHandler(response.result.value as! [String:AnyObject],nil)
+
+            } else {
+                //response.error and response.result.error both are same
+                completionHandler([:],response.error)
+            }
+        })
+        
+        //Mark:- Uncomment below part if in case you dont want to send json data with headers
+        
+        
+//        Alamofire.request(url,method:.post,parameters: parameters,encoding:URLEncoding.httpBody)
+//            .responseJSON(completionHandler: { response in
 //
-//                debugPrint(response)
-//                
-                if((response.result.value) != nil) {
-                    
-    
-                    
-                    // 2. now pass your variable / result to completion handler
-                    completionHandler(response.result.value as! [String:AnyObject],nil)
-                    
-    
-                } else {
-                    //response.error and response.result.error both are same
-                    completionHandler([:],response.error)
-                }
-            })
+//                //
+//                //                debugPrint(response)
+//                //
+//                if((response.result.value) != nil) {
+//
+//
+//
+//                    // 2. now pass your variable / result to completion handler
+//                    completionHandler(response.result.value as! [String:AnyObject],nil)
+//
+//
+//                } else {
+//                    //response.error and response.result.error both are same
+//                    completionHandler([:],response.error)
+//                }
+//            })
+        
+        
         
         
     }
