@@ -276,3 +276,45 @@ extension UICollectionViewCell{
         self.layer.shadowPath = UIBezierPath(roundedRect:self.bounds, cornerRadius:self.contentView.layer.cornerRadius).cgPath
 
     }
+    
+    
+    extension UIImage{
+    enum assetIdentifier : String{
+        case like = "like" // image name
+        case comment = "commentWhite" // image name
+        case tag = "img_tag" // image name
+        case commentDark = "comment" // image name
+    }
+    convenience init?(assetIdentifier:assetIdentifier) {
+        self.init(named: assetIdentifier.rawValue)
+    }
+}
+
+
+extension String{
+    
+    
+    public func makeStringWithAttachment(imageToAttach: UIImage,height: CGFloat = 16.0, width: CGFloat = 16.0)->NSMutableAttributedString {
+        let imageAttachmentDesc =  NSTextAttachment()
+        imageAttachmentDesc.image = imageToAttach
+        //Set bound to reposition
+        let imageOffsetYDesc:CGFloat = -5.0;
+        //imageAttachmentDesc.image!.size.height
+        imageAttachmentDesc.bounds = CGRect(x: 0, y: imageOffsetYDesc, width: width, height: height)
+        //Create string with attachment
+        let attachmentStringDesc = NSAttributedString(attachment: imageAttachmentDesc)
+        //Initialize mutable string
+        let completeTextDesc = NSMutableAttributedString(string: "")
+        //Add image to mutable string
+        completeTextDesc.append(attachmentStringDesc)
+        //Add your text to mutable string
+        let  textAfterIconDesc = NSMutableAttributedString(string:" " + self)
+        completeTextDesc.append(textAfterIconDesc)
+        return completeTextDesc
+    }
+}
+
+//Usage of above attachment extension
+    str = "hello"
+    lbl.textAlignment = .left
+        lbl.attributedText = str?.makeStringWithAttachment(imageToAttach: UIImage(assetIdentifier: .tag)!)
