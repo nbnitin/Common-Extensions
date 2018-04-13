@@ -278,16 +278,35 @@ extension UICollectionViewCell{
     }
     
     
-    extension UIImage{
+  extension UIImage{
     enum assetIdentifier : String{
-        case like = "like" // image name
-        case comment = "commentWhite" // image name
-        case tag = "img_tag" // image name
-        case commentDark = "comment" // image name
+        case like = "like"
+        case comment = "commentWhite"
+        case tag = "img_tag"
+        case commentDark = "comment"
     }
     convenience init?(assetIdentifier:assetIdentifier) {
         self.init(named: assetIdentifier.rawValue)
     }
+    
+    public func maskWithColor(color: UIColor) -> UIImage {
+        
+        UIGraphicsBeginImageContextWithOptions(self.size, false, self.scale)
+        let context = UIGraphicsGetCurrentContext()!
+        
+        let rect = CGRect(origin: CGPoint.zero, size: size)
+        
+        color.setFill()
+        self.draw(in: rect)
+        
+        context.setBlendMode(.sourceIn)
+        context.fill(rect)
+        
+        let resultImage = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
+        return resultImage
+    }
+
 }
 
 
@@ -295,12 +314,39 @@ extension String{
     
     
     public func makeStringWithAttachment(imageToAttach: UIImage,height: CGFloat = 16.0, width: CGFloat = 16.0)->NSMutableAttributedString {
+        
+          
         let imageAttachmentDesc =  NSTextAttachment()
         imageAttachmentDesc.image = imageToAttach
+        imageAttachmentDesc.setImageHeight(height: height)
+        
         //Set bound to reposition
-        let imageOffsetYDesc:CGFloat = -5.0;
+        //let imageOffsetYDesc:CGFloat = -5.0;
         //imageAttachmentDesc.image!.size.height
-        imageAttachmentDesc.bounds = CGRect(x: 0, y: imageOffsetYDesc, width: width, height: height)
+        //imageAttachmentDesc.bounds = CGRect(x: 0, y: imageOffsetYDesc, width: width, height: height)
+        //Create string with attachment
+        let attachmentStringDesc = NSAttributedString(attachment: imageAttachmentDesc)
+        //Initialize mutable string
+        let completeTextDesc = NSMutableAttributedString(string: "")
+        //Add image to mutable string
+        completeTextDesc.append(attachmentStringDesc)
+        //Add your text to mutable string
+        let  textAfterIconDesc = NSMutableAttributedString(string:" " + self)
+        completeTextDesc.append(textAfterIconDesc)
+        return completeTextDesc
+    }
+    
+    public func makeStringWithAttachment(imageToAttach: UIImage,height: CGFloat = 16.0, width: CGFloat = 16.0,color:UIColor)->NSMutableAttributedString {
+        
+        
+        let imageAttachmentDesc =  NSTextAttachment()
+        imageAttachmentDesc.image = imageToAttach.maskWithColor(color: color)
+        imageAttachmentDesc.setImageHeight(height: height)
+        
+        //Set bound to reposition
+      //  let imageOffsetYDesc:CGFloat = -5.0;
+        //imageAttachmentDesc.image!.size.height
+       // imageAttachmentDesc.bounds = CGRect(x: 0, y: imageOffsetYDesc, width: width, height: height)
         //Create string with attachment
         let attachmentStringDesc = NSAttributedString(attachment: imageAttachmentDesc)
         //Initialize mutable string
@@ -314,7 +360,14 @@ extension String{
     }
 }
 
-//Usage of above attachment extension
-    str = "hello"
-    lbl.textAlignment = .left
-        lbl.attributedText = str?.makeStringWithAttachment(imageToAttach: UIImage(assetIdentifier: .tag)!)
+extension NSTextAttachment {
+    func setImageHeight(height: CGFloat) {
+        guard let image = image else { return }
+        let ratio = image.size.width / image.size.height
+        
+        bounds = CGRect(x: bounds.origin.x, y:-5.0, width: ratio * height, height: height)
+    }
+}
+
+
+
