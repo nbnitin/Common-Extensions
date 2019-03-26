@@ -276,6 +276,7 @@ extension UICollectionViewCell{
         self.layer.shadowPath = UIBezierPath(roundedRect:self.bounds, cornerRadius:self.contentView.layer.cornerRadius).cgPath
 
     }
+}
     
     extension UIColor {
     public convenience init?(hexString: String,alpha: CGFloat = 1.0) {

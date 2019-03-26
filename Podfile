@@ -8,6 +8,6 @@ target 'CommonExtension' do
   # Pods for CommonExtension
 	pod 'Alamofire', '~> 4.4'
    
-    	pod 'CryptoSwift'
+    	pod 'CryptoSwift', :git => "https://github.com/krzyzanowskim/CryptoSwift", :branch => "master"
 
 end

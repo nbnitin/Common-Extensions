@@ -11,6 +11,9 @@ import UIKit
 class ViewController: UIViewController,UINavigationControllerDelegate,UIImagePickerControllerDelegate,removeDelegate  {
     var cp : ChoosePicture!
     var apiHandeler : ApiHandler!
+    var isImageRemoved : Bool!
+    var base64String : String!
+    @IBOutlet weak var imgProfile: UIImageView!
 
     @IBOutlet weak var profileImageView: UIImageView!
     override func viewDidLoad() {
@@ -18,6 +21,14 @@ class ViewController: UIViewController,UINavigationControllerDelegate,UIImagePic
         // Do any additional setup after loading the view, typically from a nib.
         cp = ChoosePicture()
         apiHandeler = ApiHandler()
+        
+        if Connectivity.isConnectedToInternet() {
+            print("Yes! internet is available.")
+            // do some tasks..
+        } else {
+            print("No! internet is not available.")
+        }
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -26,6 +37,7 @@ class ViewController: UIViewController,UINavigationControllerDelegate,UIImagePic
     }
 
 
+    
     @IBAction func btnChooseImage(_ sender: Any) {
         let vc : UIViewController = self
         
