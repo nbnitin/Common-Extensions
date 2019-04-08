@@ -127,15 +127,17 @@ extension UIView{
         
     }
     
-    func addBorderAround(corners:UIRectCorner,borderCol:CGColor=borderColor){
+    func addBorderAround(corners:UIRectCorner,borderCol:CGColor=borderColor,layerName:String="default"){
         // Add border to profile view
         // Add rounded corners
         let view:UIView = self
         let maskLayer = CAShapeLayer()
+        maskLayer.name = layerName
         
         maskLayer.frame = view.bounds
         maskLayer.path = UIBezierPath(roundedRect: view.bounds, byRoundingCorners: corners, cornerRadii: CGSize(width: 10, height: 10)).cgPath
         view.layer.mask = maskLayer
+        view.layer.name = layerName
         
         let borderLayer = CAShapeLayer()
         borderLayer.path = maskLayer.path // Reuse the Bezier path
@@ -143,9 +145,17 @@ extension UIView{
         borderLayer.strokeColor = borderCol
         borderLayer.lineWidth = 1
         borderLayer.frame = view.bounds
+        borderLayer.name = layerName
         view.layer.addSublayer(borderLayer)
         
     }
+    //usage if you want to remove layer from view
+//    for layer in view.layer.sublayers!{
+//    if(layer.name == "error") {
+//    layer.removeFromSuperlayer()
+//    }
+//    }
+    
     
     func addCornerRadius(corners:UIRectCorner,radius:CGFloat){
         let view:UIView = self
