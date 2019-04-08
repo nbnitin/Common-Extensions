@@ -11,6 +11,56 @@ import UIKit
 private let borderWidth = CGFloat(5.0)
 private let borderColor = UIColor.lightGray.cgColor
 
+extension UIViewController{
+    func showAlert(str:String,title:String="Error!"){
+        let alert = UIAlertController(title: title, message: str, preferredStyle: .alert)
+        let alertAction = UIAlertAction(title: "Ok", style: .default, handler: nil)
+        alert.addAction(alertAction)
+        self.present(alert, animated: true, completion: nil)
+    }
+    func addNoRecordLabel(text:String="No record found",topConstraintToView:UIView){
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+        label.text = text
+        self.view.addSubview(label)
+        label.tag = 99999
+        label.translatesAutoresizingMaskIntoConstraints = false
+        
+        let leadingConstraint = NSLayoutConstraint(item: label, attribute:.leading, relatedBy: .equal, toItem: self.view, attribute: .leading, multiplier: 1, constant: 0)
+        leadingConstraint.isActive = true
+        
+        let trailingConstraint = NSLayoutConstraint(item: label, attribute:.trailing, relatedBy: .equal, toItem: self.view, attribute: .trailing, multiplier: 1, constant: 0)
+        trailingConstraint.isActive = true
+        
+        let heightConstraint = NSLayoutConstraint(item: label, attribute:.height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 30)
+        heightConstraint.isActive = true
+        
+        let centerXConstraint = NSLayoutConstraint(item: label, attribute: .centerX, relatedBy: .equal, toItem: self.view, attribute: .centerX, multiplier: 1, constant: 0)
+        centerXConstraint.isActive = true
+        
+        let top = NSLayoutConstraint(item: label, attribute: .top, relatedBy: .equal, toItem: topConstraintToView, attribute: .bottom, multiplier: 1, constant: self.view.frame.height / 2)
+        top.isActive = true
+        self.view.addConstraints([leadingConstraint,trailingConstraint,centerXConstraint,heightConstraint])
+        label.textAlignment = .center
+        label.textColor = UIColor.white
+        label.backgroundColor = UIColor.lightGray
+        
+        
+    }
+    
+    //Usage
+//    here navigation bar is custom navigation view in view controller
+//     self.addNoRecordLabel(text: "No cycle trim found",topConstraintToView: self.navigationBar)
+//    self.cycleTrimCollectionView.isHidden = true
+    
+    func removeNoRecordFoundLabel(){
+        let lbl = self.view.viewWithTag(99999)
+        lbl?.removeFromSuperview()
+    }
+    
+    //Usage
+//    self.removeNoRecordFoundLabel()
+//    self.cycleTrimCollectionView.isHidden = false
+}
 
 
 
