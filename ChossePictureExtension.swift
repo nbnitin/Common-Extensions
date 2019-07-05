@@ -1,18 +1,36 @@
+
 //
 //  ChooseImageExtension.swift
-//  EazyCarCare
+//  
 //
 //  Created by Nitin Bhatia on 28/04/17.
 //  Copyright © 2017 Nitin Bhatia. All rights reserved.
 //
 import Foundation
-import  UIKit
+import AVFoundation
+import UIKit
+
+enum ImagePickedLocationEnum : String {
+    case gallery
+    case camera
+    
+    var rawValue : String {
+        switch self {
+            case .gallery: return "gallery"
+            case .camera: return "camera"
+        }
+    }
+}
 
 enum UIUserInterfaceIdiom : Int {
     case unspecified
     
     case phone // iPhone and iPod touch style UI
     case pad // iPad style UI
+}
+
+protocol VCOptionsDelegate {
+    func optionSelected(_ location:ImagePickedLocationEnum)
 }
 
  protocol removeDelegate{
@@ -22,6 +40,7 @@ enum UIUserInterfaceIdiom : Int {
 class ChoosePicture :UIViewController,UIImagePickerControllerDelegate,UINavigationControllerDelegate {
     
     var delegate : removeDelegate!
+    var vcOption : VCOptionsDelegate!
     
     func openActions(vc : UIViewController,target : Any,removePictureOption:Bool=false){
         
@@ -59,7 +78,7 @@ class ChoosePicture :UIViewController,UIImagePickerControllerDelegate,UINavigati
         
         if( removePictureOption ) {
             optionMenu.addAction(removeAction)
-            delegate = vc as! removeDelegate
+            delegate = vc as? removeDelegate
         }
         
         
@@ -87,22 +106,25 @@ class ChoosePicture :UIViewController,UIImagePickerControllerDelegate,UINavigati
     func openGallery(vc : UIViewController,target : Any){
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = target as? UIImagePickerControllerDelegate & UINavigationControllerDelegate
-        imagePicker.sourceType = UIImagePickerControllerSourceType.photoLibrary;
-        imagePicker.allowsEditing = true
+        imagePicker.sourceType = UIImagePickerController.SourceType.photoLibrary;
+        imagePicker.allowsEditing = false
+        
+        vcOption.optionSelected(ImagePickedLocationEnum.gallery)
         vc.present(imagePicker, animated: true, completion: nil)
     }
     
     func openCamera(vc : UIViewController,target : Any){
-        if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.camera) {
+        if(UIImagePickerController.isSourceTypeAvailable(UIImagePickerController.SourceType.camera) && checkForCameraPermission(vc : vc)) {
             let imagePicker = UIImagePickerController()
             imagePicker.delegate = target as? UIImagePickerControllerDelegate & UINavigationControllerDelegate
-            imagePicker.sourceType = UIImagePickerControllerSourceType.camera;
-            imagePicker.allowsEditing = true
+            imagePicker.sourceType = UIImagePickerController.SourceType.camera;
+            imagePicker.allowsEditing = false
+            vcOption.optionSelected(ImagePickedLocationEnum.camera)
             vc.present(imagePicker, animated: true, completion: nil)
         }
     }
     
-    func imagePickerController(_ picker: UIImagePickerController,                           didFinishPickingMediaWithInfo info: [String : Any])
+    func imagePickerController(_ picker: UIImagePickerController,                           didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any])
     {
         
     }
@@ -111,10 +133,44 @@ class ChoosePicture :UIViewController,UIImagePickerControllerDelegate,UINavigati
     }
     
     func convertToBase64(image : UIImage) -> String {
-        let imageData = UIImageJPEGRepresentation(image, 0.6)
+        let imageData = image.jpegData(compressionQuality: 0.6)
         
         return (imageData?.base64EncodedString(options: NSData.Base64EncodingOptions.init(rawValue: 0)))!
     }
     
+    //Mark:- To authorize camera
+    func checkForCameraPermission(vc:UIViewController)->Bool{
+        let authStatus = AVCaptureDevice.authorizationStatus(for: AVMediaType.video)
+        
+        switch authStatus {
+        case .authorized:
+            return true
+            break
+        case .denied:
+            alertPromptToAllowCameraAccessViaSetting(vc: vc)
+        default:
+            // Not determined fill fall here - after first use, when is't neither authorized, nor denied
+            // we try to use camera, because system will ask itself for camera permissions
+            return true
+        }
+        
+        return false
+    }
+    
+    func alertPromptToAllowCameraAccessViaSetting(vc:UIViewController) {
+        let alertController = UIAlertController(title: "UVMSpotter does not have access to your camera. To enable access, tap Settings and turn on Camera.",
+                                                message: "",
+                                                preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "Settings", style: .cancel) { _ in
+            if let url = URL(string: UIApplication.openSettingsURLString) {
+                UIApplication.shared.open(url, options: [:], completionHandler: { _ in
+                    // Handle
+                })
+            }
+        })
+        alertController.addAction(UIAlertAction(title: "Cancel", style: .default))
+        
+        vc.present(alertController, animated: true)
+    }
+    
 }
-
