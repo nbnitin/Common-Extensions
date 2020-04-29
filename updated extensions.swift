@@ -418,7 +418,50 @@ extension UICollectionViewCell{
    // cell.dropShadow(color: .red, opacity: 0.5, offSet: CGSize(width: -0.6, height: 0.6), radius: 3, scale: true)
 }
 
+extension Comparable {
+
+    func clamped(to range: ClosedRange<Self>) -> Self {
+
+        if self > range.upperBound {
+            return range.upperBound
+        } else if self < range.lowerBound {
+            return range.lowerBound
+        } else {
+            return self
+        }
+    }
+}
+
 extension UIColor {
+    //usage UIColor.red.getLightShade()
+    
+    //make color lighter or brighter
+    func getLighterShade(percentage:CGFloat=30.0)->UIColor {
+        return self.adjustBrightness(by: percentage) //for darker give percentage in negative (-30)
+    }
+    
+    func adjustBrightness(by percentage: CGFloat = 30.0) -> UIColor {
+
+        var red: CGFloat = 0.0
+        var green: CGFloat = 0.0
+        var blue: CGFloat = 0.0
+        var alpha: CGFloat = 0.0
+
+        if self.getRed(&red, green: &green, blue: &blue, alpha: &alpha) {
+
+            let pFactor = (100.0 + percentage) / 100.0
+
+            let newRed = (red*pFactor).clamped(to: 0.0 ... 1.0)
+            let newGreen = (green*pFactor).clamped(to: 0.0 ... 1.0)
+            let newBlue = (blue*pFactor).clamped(to: 0.0 ... 1.0)
+
+            return UIColor(red: newRed, green: newGreen, blue: newBlue, alpha: alpha)
+        }
+
+        return self
+    }
+    
+    
     public convenience init?(hexString: String,alpha: CGFloat = 1.0) {
         let hexString: String = hexString.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         let scanner = Scanner(string: hexString)
