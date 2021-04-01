@@ -1,0 +1,141 @@
+//
+//  AnimationHandler.swift
+
+//
+//  Created by Nitin Bhatia on 24/09/19.
+//  Copyright © 2019 Nitin Bhatia. All rights reserved.
+//
+
+import Foundation
+import UIKit
+
+//shake animation: http://stackoverflow.com/questions/27987048/shake-animation-for-uitextfield-uiview-in-swift
+extension UIView {
+
+func fadeIn(_ duration: TimeInterval = 0.5, delay: TimeInterval = 0.0, completion: @escaping ((Bool) -> Void) = {(finished: Bool) -> Void in}) {
+        UIView.animate(withDuration: duration, delay: delay, options: UIView.AnimationOptions.curveEaseIn, animations: {
+                self.alpha = 1.0
+        }, completion: completion)  }
+
+        func fadeOut(_ duration: TimeInterval = 0.5, delay: TimeInterval = 1.0, completion: @escaping (Bool) -> Void = {(finished: Bool) -> Void in}) {
+            UIView.animate(withDuration: duration, delay: delay, options: UIView.AnimationOptions.curveEaseIn, animations: {
+                self.alpha = 0.0
+        }, completion: completion)
+       }
+    
+    func shake(count : Float? = nil,for duration : TimeInterval? = nil,withTanslation translation : Float? = nil) {
+        let animation : CABasicAnimation = CABasicAnimation(keyPath: "transform.translation.x")
+        animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear)
+        
+        animation.repeatCount = count ?? 2
+        animation.duration = (duration ?? 0.5)/TimeInterval(animation.repeatCount)
+        animation.autoreverses = true
+        animation.byValue = translation ?? -5
+        layer.add(animation, forKey: "shake")
+    }
+    
+    func fadeIn() {
+        // Move our fade out code from earlier
+        UIView.animate(withDuration: 1.0, delay: 0.0, options: UIView.AnimationOptions.curveEaseIn, animations: {
+            self.alpha = 1.0 // Instead of a specific instance of, say, birdTypeLabel, we simply set [thisInstance] (ie, self)'s alpha
+        }, completion: nil)
+    }
+    
+    func fadeOut() {
+        UIView.animate(withDuration: 1.0, delay: 0.0, options: UIView.AnimationOptions.curveEaseOut, animations: {
+            self.alpha = 0.0
+        }, completion: nil)
+    }
+    
+    //rotate: https://www.andrewcbancroft.com/2014/10/15/rotate-animation-in-swift/
+    
+    func rotate360Degrees(duration: CFTimeInterval = 1.0, completionDelegate: AnyObject? = nil) {
+        let rotateAnimation = CABasicAnimation(keyPath: "transform.rotation")
+        rotateAnimation.fromValue = 0.0
+        rotateAnimation.toValue = Double.pi * 2
+        rotateAnimation.duration = duration
+        
+        if let delegate: AnyObject = completionDelegate {
+            rotateAnimation.delegate = delegate as! CAAnimationDelegate
+        }
+        self.layer.add(rotateAnimation, forKey: nil)
+    }
+    
+    
+    //zoom http://stackoverflow.com/questions/31320819/scale-uibutton-animation-swift
+    
+    
+    /**
+     Simply zooming in of a view: set view scale to 0 and zoom to Identity on 'duration' time interval.
+     - parameter duration: animation duration
+     */
+    func zoomIn(duration: TimeInterval = 0.2) {
+        self.transform = CGAffineTransform(scaleX: 0.0, y: 0.0)
+        UIView.animate(withDuration: duration, delay: 0.0, options: [.curveLinear], animations: { () -> Void in
+            self.transform = CGAffineTransform.identity
+        }) { (animationCompleted: Bool) -> Void in
+        }
+    }
+    
+    /**
+     Simply zooming out of a view: set view scale to Identity and zoom out to 0 on 'duration' time interval.
+     - parameter duration: animation duration
+     */
+    func zoomOut(duration: TimeInterval = 0.9,completion: @escaping (Bool)->Void) {
+        self.transform = CGAffineTransform(scaleX: 0.0, y: 0.0)
+        UIView.animate(withDuration: duration, animations: {
+            self.transform = CGAffineTransform.identity
+        }, completion: { _ in completion(true)})
+    }
+    
+    /**
+     Zoom in any view with specified offset magnification.
+     - parameter duration:     animation duration.
+     - parameter easingOffset: easing offset.
+     */
+    func zoomInWithEasing(duration: TimeInterval = 0.9, easingOffset: CGFloat = 0.2) {
+        let easeScale = 1.0 + easingOffset
+        let easingDuration = TimeInterval(easingOffset) * duration / TimeInterval(easeScale)
+        let scalingDuration = duration - easingDuration
+        UIView.animate(withDuration: scalingDuration, delay: 0.0, options: .curveEaseIn, animations: { () -> Void in
+            self.transform = CGAffineTransform(scaleX: easeScale, y: easeScale)
+        }, completion: { (completed: Bool) -> Void in
+            UIView.animate(withDuration: easingDuration, delay: 0.0, options: .curveEaseOut, animations: { () -> Void in
+                self.transform = CGAffineTransform.identity
+            }, completion: { (completed: Bool) -> Void in
+            })
+        })
+    }
+    
+    /**
+     Zoom out any view with specified offset magnification.
+     - parameter duration:     animation duration.
+     - parameter easingOffset: easing offset.
+     */
+    func zoomOutWithEasing(duration: TimeInterval = 10, easingOffset: CGFloat = 0.2) {
+        let easeScale = 1.0 + easingOffset
+        let easingDuration = TimeInterval(easingOffset) * duration / TimeInterval(easeScale)
+        let scalingDuration = duration - easingDuration
+        UIView.animate(withDuration: easingDuration, delay: 0.0, options: .curveEaseOut, animations: { () -> Void in
+            self.transform = CGAffineTransform(scaleX: easeScale, y: easeScale)
+        }, completion: { (completed: Bool) -> Void in
+            UIView.animate(withDuration: scalingDuration, delay: 0.0, options: .curveEaseOut, animations: { () -> Void in
+                self.transform = CGAffineTransform(scaleX: 0.0, y: 0.0)
+            }, completion: { (completed: Bool) -> Void in
+            })
+        })
+    }
+    
+    
+    //usage (self.view.frame.height / 2 - testView.frame.height)
+    func Move(duration: TimeInterval = 10,xAxis:CGFloat,yAxis:CGFloat,completion: @escaping (Bool)->Void) {
+        self.transform = CGAffineTransform(translationX: xAxis, y: yAxis )
+        UIView.animate(withDuration: 0.9,delay: 0.4,options: [.curveLinear], animations: {
+            self.transform = CGAffineTransform.identity
+        },completion: {(finished) in
+            completion(true)
+        })
+        
+    }
+    
+}
