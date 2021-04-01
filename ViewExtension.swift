@@ -339,6 +339,7 @@ extension UILabel{
         
     }
     
+    //usage : videoTitleLabel.countLabelLines() > 1
     func countLabelLines() -> Int {
         if self.text == nil || self.text!.isEmpty {
             return 0
