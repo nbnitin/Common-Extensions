@@ -83,6 +83,14 @@ extension UIView{
         case bottom
         case top
     }
+    
+    func beizerRound(corners:UIRectCorner,size:CGSize=CGSize(width: 100, height: 100)){
+        let rectShape = CAShapeLayer()
+        rectShape.bounds = self.frame
+        rectShape.position = self.center
+        rectShape.path = UIBezierPath(roundedRect: self.bounds, byRoundingCorners: corners, cornerRadii: size).cgPath
+        self.layer.mask = rectShape
+    }
 
     func addShadow(location: VerticalLocation, color: UIColor = .black, opacity: Float = 0.3, radius: CGFloat = 5.0) {
         switch location {
@@ -330,6 +338,26 @@ extension UILabel{
         view.layer.masksToBounds = true
         
     }
+    
+    func countLabelLines() -> Int {
+        if self.text == nil || self.text!.isEmpty {
+            return 0
+        }
+        
+        let myText = self.text! as NSString
+
+        let rect = CGSize(width: self.bounds.width, height: CGFloat.greatestFiniteMagnitude)
+        let labelSize = myText.boundingRect(with: rect, options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: self.font], context: nil)
+
+        return Int(ceil(CGFloat(labelSize.height) / self.font.lineHeight))
+    }
+    
+    func numberOfVisibleLines()->Int {
+        let maxSize = CGSize(width: self.frame.size.width, height: CGFloat(MAXFLOAT))
+        let textHeight = self.sizeThatFits(maxSize).height
+        let lineHeight = self.font.lineHeight
+            return Int(ceil(textHeight / lineHeight))
+        }
 }
 
 extension UICollectionViewCell{
